@@ -16,7 +16,7 @@ const HeroCard = () => {
         
             <div className='flex flex-col justify-between items-end space-y-2'>
               <p className='text-white max-md:text-xs  font-bold text-lg p-2 rounded-xl bg-green-600'>₦55,000</p>
-              <div className='flex max-md:hidden flex-row gap-2'>{[1,2,3,4,5].map((item) => (<BsStarFill className="text-orange-400"/>))}</div>
+              <div className='flex max-md:hidden flex-row gap-2'>{[1,2,3,4,5].map((item) => (<BsStarFill key={item} className="text-orange-400"/>))}</div>
               <p>100+ sold</p>
               <button className='bg-purple-400 cursor-pointer flex h-fit flex-row  p-2 px-4 rounded-xl'>
                 <BiCartAdd size={20}/>
