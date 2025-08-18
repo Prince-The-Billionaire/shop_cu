@@ -12,7 +12,6 @@ import {
   FaChevronRight,
   FaCheck,
   FaTruck,
-  FaShield,
   FaUndo,
 } from "react-icons/fa"
 import { Button } from "@/components/ui/button"
@@ -324,7 +323,7 @@ export default function ProductDetailPage() {
               </div>
 
               <div className="flex items-center gap-3">
-                <FaShield className="h-5 w-5 text-primary" />
+                {/* <FaShield className="h-5 w-5 text-primary" /> */}
                 <div>
                   <p className="font-serif font-medium text-foreground">Secure Payment</p>
                   <p className="text-sm text-muted-foreground font-serif">100% protected</p>
