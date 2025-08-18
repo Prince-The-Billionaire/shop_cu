@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { useCartStore } from "@/lib/cart-store"
+import { products } from "@/lib/products-data"
+import { ProductCard } from "@/components/product-card"
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -125,7 +127,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
+      <header className="sticky rounded-2xl top-1 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
         <div className="container mx-auto px-4 py-4">
           <nav className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
@@ -160,6 +162,7 @@ export default function HomePage() {
               >
                 Books
               </a>
+              <a href="/blogs" className="text-foreground hover:text-primary transition-colors font-serif">Blogs</a>
             </div>
 
             <a href="/store">
@@ -280,7 +283,14 @@ export default function HomePage() {
           <p className="text-xl mb-8 font-serif opacity-90 max-w-2xl mx-auto">
             Join thousands of Covenant University students who trust ShopCU for their campus needs
           </p>
-          <a href="/store">
+          
+          <p className="text-3xl text-left font-bold">Top Sellers</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-8">
+            {products.slice(0,4).map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+          <a href="/store" className="mt-8">
             <Button size="lg" variant="secondary" className="text-lg px-8 py-6 font-serif">
               Explore Store
             </Button>
