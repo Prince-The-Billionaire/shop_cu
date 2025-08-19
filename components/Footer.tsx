@@ -98,7 +98,7 @@ const Footer = () => {
 
           <div className="border-t border-border mt-8 pt-8 text-center">
             <p className="text-muted-foreground font-serif">
-              © 205 ShopCU. All Rights Reserved.
+              © 2025 ShopCU. All Rights Reserved.
             </p>
           </div>
         </div>
