@@ -10,18 +10,19 @@ const Header = () => {
 
   return (
     <header
-      className="fixed left-10 top-1/5 z-50 
+      className="fixed left-10 max-md:top-1 top-1/5 z-50 
       rounded-2xl 
+      
       bg-violet-400/20 
       backdrop-blur-xl 
       border border-white/20 
       shadow-lg shadow-violet-500/20
       "
     >
-      <div className="container mx-auto px-4 py-6">
-        <nav className="flex flex-col items-center justify-between space-y-10">
+      <div className="container mx-auto px-4 py-2 md:py-6">
+        <nav className="flex flex-col max-md:flex-row items-center max-md:space-x-10 justify-between md:space-y-10">
           {/* Logo */}
-          <div className="flex flex-col items-center space-y-2">
+          <div className="flex flex-col max-md:flex-row items-center md:space-y-2">
             <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
               <span className="text-primary-foreground font-bold font-sans text-lg">S</span>
             </div>
