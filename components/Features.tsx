@@ -48,7 +48,7 @@ const Features = () => {
     <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold font-sans text-foreground mb-4">Why Choose ShopCU?</h2>
+            <h2 className="text-3xl md:text-4xl font-bold font-sans text-foreground mb-4">Why Choose <span className='text-primary'>CampusCart?</span> </h2>
             <p className="text-xl text-muted-foreground font-serif max-w-2xl mx-auto">
               We understand student life and have built a platform that serves your unique needs
             </p>

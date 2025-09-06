@@ -61,13 +61,13 @@ const Categories = () => {
     <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold font-sans text-foreground mb-4">Shop by Category</h2>
+            <h2 className="text-3xl md:text-4xl font-bold font-sans text-foreground mb-4">Shop by <span className='text-primary'>Category</span> </h2>
             <p className="text-lg text-muted-foreground font-serif max-w-2xl mx-auto">
               Discover everything you need for campus life, from the latest tech to stylish fashion
             </p>
           </div>
 
-          <div ref={categoriesRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div ref={categoriesRef} className="md:px-16  grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {categories.map((category, index) => {
               const IconComponent = category.icon
               return (

@@ -1,16 +1,20 @@
 import React from 'react'
+import Image from 'next/image'
 
 const Footer = () => {
   return (
-    <footer className="bg-muted py-12">
-        <div className="container mx-auto px-4">
+    <footer className="bg-muted  py-12">
+        <div className="container mx-auto px-4 md:px-16">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                  <span className="text-primary-foreground font-bold font-sans">S</span>
-                </div>
-                <span className="text-xl font-bold font-sans text-primary">ShopCU</span>
+                <Image
+                  src={'/campuscart_logo.png'}
+                  alt="campus cart logo"
+                  width={50}
+                  height={50}
+                />
+                <p className='text-xl font-bold font-sans'><span className=" text-primary">Campus</span> Cart</p>
               </div>
               <p className="text-muted-foreground font-serif">
                 Your trusted campus store for all your university needs.
@@ -98,7 +102,7 @@ const Footer = () => {
 
           <div className="border-t border-border mt-8 pt-8 text-center">
             <p className="text-muted-foreground font-serif">
-              © 2025 ShopCU. All Rights Reserved.
+              © 2025 CampusCart. All Rights Reserved.
             </p>
           </div>
         </div>

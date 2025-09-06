@@ -89,7 +89,7 @@ export default function StorePage() {
       <div className="container mx-auto px-4 py-8">
         {/* Page Header */}
         <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold font-sans text-foreground mb-4">ShopCU Store</h1>
+          <h1 className="text-3xl md:text-4xl font-bold font-sans text-foreground mb-4">Campus Cart</h1>
           <p className="text-lg text-muted-foreground font-serif">
             Discover amazing products curated for Covenant University students
           </p>

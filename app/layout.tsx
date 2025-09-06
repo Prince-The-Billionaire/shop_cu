@@ -17,10 +17,9 @@ const manrope = Manrope({
 })
 
 export const metadata: Metadata = {
-  title: "ShopCU - Your Campus Store | Covenant University",
+  title: "CampusCart - Your Campus Store | Covenant University",
   description:
     "Shop electronics, clothes, jewelry, books and more at ShopCU - designed for Covenant University students",
-  generator: "v0.app",
 }
 
 export default function RootLayout({

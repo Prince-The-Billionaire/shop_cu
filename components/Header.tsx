@@ -3,6 +3,7 @@ import React from "react"
 import { Button } from "./ui/button"
 import { FaShoppingCart, FaLaptop, FaTshirt, FaGem, FaBook, FaBlog } from "react-icons/fa"
 import { useCartStore } from "@/lib/cart-store"
+import Image from "next/image"
 
 const Header = () => {
   const { getTotalItems } = useCartStore()
@@ -13,21 +14,21 @@ const Header = () => {
       className="fixed left-10 max-md:top-1 top-1/5 z-50 
       rounded-2xl 
       
-      bg-violet-400/20 
+      bg-orange-400/20 
       backdrop-blur-xl 
       border border-white/20 
-      shadow-lg shadow-violet-500/20
+      shadow-lg shadow-orange-500/20
       "
     >
-      <div className="container mx-auto px-4 py-2 md:py-6">
+      <div className="container mx-auto px-2 py-2 md:py-6">
         <nav className="flex flex-col max-md:flex-row items-center max-md:space-x-10 justify-between md:space-y-10">
           {/* Logo */}
-          <div className="flex flex-col max-md:flex-row items-center md:space-y-2">
-            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
-              <span className="text-primary-foreground font-bold font-sans text-lg">S</span>
-            </div>
-            <span className="text-xl font-bold font-sans text-primary">ShopCU</span>
-          </div>
+          <Image
+            src={'/campuscart_logo.png'}
+            alt="campus cart logo"
+            width={50}
+            height={50}
+          />
 
           {/* Links */}
           <div className="hidden md:flex flex-col items-center space-y-6">
@@ -35,42 +36,42 @@ const Header = () => {
               href="/store?category=electronics"
               className="flex flex-col items-center text-foreground hover:text-primary transition-colors font-serif"
             >
-              <FaLaptop className="text-lg mb-1" />
-              Electronics
+              <FaLaptop className="text-2xl mb-1" />
+              {/* Electronics */}
             </a>
             <a
               href="/store?category=clothes"
               className="flex flex-col items-center text-foreground hover:text-primary transition-colors font-serif"
             >
-              <FaTshirt className="text-lg mb-1" />
-              Clothes
+              <FaTshirt className="text-2xl mb-1" />
+              {/* Clothes */}
             </a>
             <a
               href="/store?category=jewelry"
               className="flex flex-col items-center text-foreground hover:text-primary transition-colors font-serif"
             >
-              <FaGem className="text-lg mb-1" />
-              Jewelry
+              <FaGem className="text-2xl mb-1" />
+              {/* Jewelry */}
             </a>
             <a
               href="/store?category=books"
               className="flex flex-col items-center text-foreground hover:text-primary transition-colors font-serif"
             >
-              <FaBook className="text-lg mb-1" />
-              Books
+              <FaBook className="text-2xl mb-1" />
+              {/* Books */}
             </a>
             <a
               href="/blogs"
               className="flex flex-col items-center text-foreground hover:text-primary transition-colors font-serif"
             >
-              <FaBlog className="text-lg mb-1" />
-              Blogs
+              <FaBlog className="text-2xl mb-1" />
+              {/* Blogs */}
             </a>
           </div>
 
           {/* Cart with badge */}
           <a href="/store" className="relative">
-            <Button className="font-serif flex items-center">
+            <Button className="font-serif flex text-white items-center">
               <FaShoppingCart className="h-5 w-5" />
               
             </Button>
