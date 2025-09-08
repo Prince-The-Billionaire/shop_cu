@@ -11,13 +11,46 @@ export interface Product {
   inStock: boolean
   description: string
   longDescription?: string
+  instagram?:string
   specifications?: Record<string, string>
   features?: string[]
   brand?: string
+  brandImage?:string
   sku?: string
 }
 
 export const products: Product[] = [
+  {
+    id:6,
+    name:"Male Silver Necklace",
+    price: 5000,
+    originalPrice: 7000,
+    category:"jewelry",
+    image:'/necklace.png',
+    images:['/necklace.png','/necklace.png','/necklace.png'],
+    rating:4.7,
+    reviews:5,
+    inStock:true,
+    description:'Silver necklace perfect valentines day gift',
+    longDescription:'We offer elegant, non-tarnish pieces that combine quality and affordability. Our timeless designs inspire confidence and beauty',
+    brand: "Nilux Jewelry",
+    instagram:'nilux_jewelry',
+    sku: "Ni-120",
+    specifications: {
+      Material: "100% Pure Steel",
+      Width: "3 cm",
+      Length: "50cm",
+      Sizes: "S, M, L, XL, XXL",
+      Color: "Silver with various white rine stones",
+      Weight: "200g",
+    },
+    features: [
+      "Street Wear Style",
+      "Rust proof",
+      "Durable construction",
+    ],
+
+  },
   {
     id: 1,
     name: "MacBook Air M2",
@@ -146,7 +179,7 @@ export const products: Product[] = [
   },
   
   {
-    id: 6,
+    id: 5,
     name: "Smart Watch",
     price: 45000,
     category: "jewelry",

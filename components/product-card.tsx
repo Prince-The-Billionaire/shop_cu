@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { useCartStore } from "@/lib/cart-store"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 interface Product {
   id: number
@@ -31,6 +32,7 @@ export function ProductCard({ product }: ProductCardProps) {
   const [isWishlisted, setIsWishlisted] = useState(false)
   const [imageError, setImageError] = useState(false)
   const { addItem, openCart } = useCartStore()
+  const router = useRouter()
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("en-NG", {
@@ -59,8 +61,12 @@ export function ProductCard({ product }: ProductCardProps) {
     setTimeout(() => openCart(), 100)
   }
 
+  const handleOpen = (id:number) =>{
+    router.push(`/product/${id}`)
+  }
+
   return (
-    <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-border hover:border-primary/50 overflow-hidden">
+    <Card onClick={() => handleOpen(product.id)} className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-border hover:border-primary/50 overflow-hidden">
       <CardHeader className="p-0 relative">
         {/* Product Image */}
         <div className="relative overflow-hidden bg-muted/30">

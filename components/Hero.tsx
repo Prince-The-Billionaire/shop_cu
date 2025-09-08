@@ -4,6 +4,7 @@ import { Button } from './ui/button'
 import { Badge } from './ui/badge'
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { CartSidebar } from './cart-sidebar'
 gsap.registerPlugin(ScrollTrigger)
 
 const Hero = () => {
@@ -26,6 +27,7 @@ const Hero = () => {
   }, [])
   return (
     <section className="relative min-h-screen flex flex-col items-center justify-center py-20 lg:py-32 overflow-hidden">
+        <CartSidebar/>
         <div className="absolute inset-0 bg-[url(/peach.png)] z-5 no-repeat bg-cover"></div>
         <div className="container flex flex-col items-center justify-center mx-auto px-4 relative z-10">
           <div ref={heroRef} className="text-center flex flex-col items-center justify-center max-w-4xl mx-auto">

@@ -6,7 +6,7 @@ import { useCartStore } from "@/lib/cart-store"
 import Image from "next/image"
 
 const Header = () => {
-  const { getTotalItems } = useCartStore()
+  const { getTotalItems, isOpen, toggleCart } = useCartStore()
   const totalItems = getTotalItems()
 
   return (
@@ -70,7 +70,7 @@ const Header = () => {
           </div>
 
           {/* Cart with badge */}
-          <a href="/store" className="relative">
+          <div onClick={toggleCart}  className="relative">
             <Button className="font-serif flex text-white items-center">
               <FaShoppingCart className="h-5 w-5" />
               
@@ -84,7 +84,7 @@ const Header = () => {
                 {totalItems}
               </span>
             )}
-          </a>
+          </div>
         </nav>
       </div>
     </header>

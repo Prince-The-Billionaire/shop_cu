@@ -23,6 +23,9 @@ import { CartSidebar } from "@/components/cart-sidebar"
 import { ProductCard } from "@/components/product-card"
 import { useCartStore } from "@/lib/cart-store"
 import { getProductById, getRelatedProducts } from "@/lib/products-data"
+import Header from "@/components/Header"
+import {MdShield} from 'react-icons/md'
+import { Shield } from "lucide-react"
 
 export default function ProductDetailPage() {
   const params = useParams()
@@ -110,10 +113,11 @@ export default function ProductDetailPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <StoreHeader />
+      {/* <StoreHeader /> */}
+      <Header/>
       <CartSidebar />
 
-      <div ref={pageRef} className="container mx-auto px-4 py-8">
+      <div ref={pageRef} className="container mx-auto px-4 md:px-16 py-8">
         {/* Breadcrumb */}
         <nav className="mb-8">
           <div className="flex items-center space-x-2 text-sm font-serif">
@@ -323,7 +327,7 @@ export default function ProductDetailPage() {
               </div>
 
               <div className="flex items-center gap-3">
-                {/* <FaShield className="h-5 w-5 text-primary" /> */}
+                <MdShield className="h-5 w-5 text-primary" />
                 <div>
                   <p className="font-serif font-medium text-foreground">Secure Payment</p>
                   <p className="text-sm text-muted-foreground font-serif">100% protected</p>
