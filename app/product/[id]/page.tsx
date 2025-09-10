@@ -26,6 +26,8 @@ import { getProductById, getRelatedProducts } from "@/lib/products-data"
 import Header from "@/components/Header"
 import {MdShield} from 'react-icons/md'
 import { Shield } from "lucide-react"
+import Image from "next/image"
+import Link from "next/link"
 
 export default function ProductDetailPage() {
   const params = useParams()
@@ -227,6 +229,13 @@ export default function ProductDetailPage() {
               <Badge variant="outline" className="font-serif capitalize">
                 {product.category}
               </Badge>
+              <Image
+                src={product.brandImage as string}
+                alt={product.brand as string}
+                width={80}
+                height={80}
+                className="rounded-full"
+              />
               {product.brand && <span className="text-sm text-muted-foreground font-serif">by {product.brand}</span>}
             </div>
 
@@ -279,6 +288,16 @@ export default function ProductDetailPage() {
                 </ul>
               </div>
             )}
+
+            <Link href={product.instagramlink as string} className="flex flex-row items-center">
+              <Image 
+                src={'/instagram.png'}
+                alt="instagram"
+                width={40}
+                height={40}
+              />
+              <p className="font-bold ">{product.instagram}</p>
+            </Link>
 
             {/* Quantity & Add to Cart */}
             <div className="space-y-4">

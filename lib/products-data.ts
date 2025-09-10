@@ -12,6 +12,7 @@ export interface Product {
   description: string
   longDescription?: string
   instagram?:string
+  instagramlink?:string
   specifications?: Record<string, string>
   features?: string[]
   brand?: string
@@ -34,7 +35,9 @@ export const products: Product[] = [
     description:'Silver necklace perfect valentines day gift',
     longDescription:'We offer elegant, non-tarnish pieces that combine quality and affordability. Our timeless designs inspire confidence and beauty',
     brand: "Nilux Jewelry",
+    brandImage:'/nilux.jpg',
     instagram:'nilux_jewelry',
+    instagramlink:'https://www.instagram.com/nilux_jewelry',
     sku: "Ni-120",
     specifications: {
       Material: "100% Pure Steel",
