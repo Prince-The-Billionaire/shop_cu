@@ -11,7 +11,7 @@ const Header = () => {
 
   return (
     <header
-      className="fixed left-10 max-md:top-1 top-1/5 z-50 
+      className="fixed md:left-10 max-md:bottom-2 max-md:h-fit max-md:w-[90%] max-md:left-5   md:top-1/5 z-50 
       rounded-2xl 
       
       bg-orange-400/20 

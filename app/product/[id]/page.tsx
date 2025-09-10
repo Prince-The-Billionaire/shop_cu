@@ -375,7 +375,7 @@ export default function ProductDetailPage() {
                 Reviews ({product.reviews})
               </TabsTrigger>
               <TabsTrigger value="shipping" className="font-serif">
-                Shipping & Returns
+                Shipping
               </TabsTrigger>
             </TabsList>
 
