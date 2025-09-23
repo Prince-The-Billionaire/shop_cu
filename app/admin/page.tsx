@@ -6,7 +6,7 @@ import { Product, products as productsData } from "@/lib/products-data";
 import Header from "@/components/Header";
 
 const accent = "#FFA726"; // Light orange
-
+// i'm just testing to see if deployment would work
 const emptyProduct = {
   id: 0,
   name: "",
