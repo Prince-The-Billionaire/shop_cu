@@ -22,7 +22,7 @@ import { StoreHeader } from "@/components/store-header"
 import { CartSidebar } from "@/components/cart-sidebar"
 import { ProductCard } from "@/components/product-card"
 import { useCartStore } from "@/lib/cart-store"
-import { getProductById, getRelatedProducts } from "@/lib/products-data"
+import { fetchProductById, fetchProducts, getRelatedProducts, Product } from "@/lib/products-data"
 import Header from "@/components/Header"
 import {MdShield} from 'react-icons/md'
 import { Shield } from "lucide-react"
@@ -32,9 +32,12 @@ import Link from "next/link"
 export default function ProductDetailPage() {
   const params = useParams()
   const router = useRouter()
-  const productId = Number.parseInt(params.id as string)
-  const product = getProductById(productId)
+  const productId = params.id as string
 
+  const [product, setProduct] = useState<Product | null>(null)
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [quantity, setQuantity] = useState(1)
   const [isWishlisted, setIsWishlisted] = useState(false)
@@ -45,7 +48,35 @@ export default function ProductDetailPage() {
   const imageGalleryRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (pageRef.current) {
+    const loadProduct = async () => {
+      setLoading(true)
+      setError(false)
+      try {
+        const fetchedProduct = await fetchProductById(productId)
+        if (fetchedProduct) {
+          setProduct(fetchedProduct)
+          // Load all products to get related ones
+          const allProducts = await fetchProducts()
+          const related = getRelatedProducts(fetchedProduct, 4)
+          setRelatedProducts(related)
+        } else {
+          setError(true)
+        }
+      } catch (err) {
+        console.error('Failed to load product:', err)
+        setError(true)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    if (productId) {
+      loadProduct()
+    }
+  }, [productId])
+
+  useEffect(() => {
+    if (pageRef.current && !loading) {
       gsap.fromTo(
         pageRef.current.children,
         { opacity: 0, y: 30 },
@@ -58,15 +89,27 @@ export default function ProductDetailPage() {
         },
       )
     }
-  }, [product])
+  }, [product, loading])
 
-  if (!product) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-background">
-        <StoreHeader />
+        <Header />
+        <div className="container mx-auto px-4 py-20 text-center">
+          <h1 className="text-2xl font-bold font-sans text-foreground mb-4">Loading Product...</h1>
+          <p className="text-muted-foreground font-serif mb-6">Please wait while we fetch the product details.</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error || !product) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
         <div className="container mx-auto px-4 py-20 text-center">
           <h1 className="text-2xl font-bold font-sans text-foreground mb-4">Product Not Found</h1>
-          <p className="text-muted-foreground font-serif mb-6">The product you're looking for doesn't exist.</p>
+          <p className="text-muted-foreground font-serif mb-6">The product you're looking for doesn't exist or couldn't be loaded.</p>
           <Button onClick={() => router.push("/store")} className="font-serif">
             Back to Store
           </Button>
@@ -75,8 +118,7 @@ export default function ProductDetailPage() {
     )
   }
 
-  const relatedProducts = getRelatedProducts(product)
-  const images = product.images || [product.image]
+  const images = product.images || (product.image ? [product.image] : [])
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("en-NG", {
@@ -98,7 +140,7 @@ export default function ProductDetailPage() {
         price: product.price,
         originalPrice: product.originalPrice,
         category: product.category,
-        image: product.image,
+        image: product.image || "/placeholder.svg?height=250&width=300&query=product placeholder",
         inStock: product.inStock,
       })
     }
@@ -156,7 +198,7 @@ export default function ProductDetailPage() {
             <div className="relative aspect-square bg-muted/30 rounded-lg overflow-hidden">
               <img
                 src={
-                  imageError ? "/placeholder.svg?height=500&width=500&query=product image" : images[selectedImageIndex]
+                  imageError || !product.image ? "/placeholder.svg?height=500&width=500&query=product image" : product.image
                 }
                 alt={product.name}
                 className="w-full h-full object-cover"

@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ProductCard } from "@/components/product-card"
 import { StoreHeader } from "@/components/store-header"
 import { CartSidebar } from "@/components/cart-sidebar"
-import { products } from "@/lib/products-data"
+import { fetchProducts, Product } from "@/lib/products-data"
 import Header from "@/components/Header"
 
 const categories = [
@@ -24,8 +24,20 @@ export default function StorePage() {
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [searchQuery, setSearchQuery] = useState("")
   const [sortBy, setSortBy] = useState("featured")
-  const [filteredProducts, setFilteredProducts] = useState(products)
+  const [products, setProducts] = useState<Product[]>([])
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
   const productsRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const loadProducts = async () => {
+      const data = await fetchProducts();
+      setProducts(data);
+      setFilteredProducts(data);
+      setLoading(false);
+    };
+    loadProducts();
+  }, []);
 
   useEffect(() => {
     let filtered = products
@@ -64,7 +76,7 @@ export default function StorePage() {
     }
 
     setFilteredProducts(filtered)
-  }, [selectedCategory, searchQuery, sortBy])
+  }, [selectedCategory, searchQuery, sortBy, products])
 
   useEffect(() => {
     if (productsRef.current) {
@@ -154,11 +166,15 @@ export default function StorePage() {
         </div>
 
         {/* Products Grid */}
-        <div ref={productsRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        {loading ? (
+          <div className="text-center py-12">Loading products...</div>
+        ) : (
+          <div ref={productsRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {filteredProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        )}
 
         {/* No Results */}
         {filteredProducts.length === 0 && (

@@ -10,19 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import { useCartStore } from "@/lib/cart-store"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-
-interface Product {
-  id: number
-  name: string
-  price: number
-  originalPrice?: number
-  category: string
-  image: string
-  rating: number
-  reviews: number
-  inStock: boolean
-  description: string
-}
+import { Product } from "@/lib/products-data"
 
 interface ProductCardProps {
   product: Product
@@ -54,7 +42,7 @@ export function ProductCard({ product }: ProductCardProps) {
       price: product.price,
       originalPrice: product.originalPrice,
       category: product.category,
-      image: product.image,
+      image: product.image || "/placeholder.svg?height=250&width=300&query=product placeholder",
       inStock: product.inStock,
     })
     // Optionally open cart after adding item
@@ -71,7 +59,7 @@ export function ProductCard({ product }: ProductCardProps) {
         {/* Product Image */}
         <div className="relative overflow-hidden bg-muted/30">
           <img
-            src={imageError ? "/placeholder.svg?height=250&width=300&query=product placeholder" : product.image}
+            src={imageError || !product.image ? "/placeholder.svg?height=250&width=300&query=product placeholder" : product.image}
             alt={product.name}
             className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
             onError={() => setImageError(true)}

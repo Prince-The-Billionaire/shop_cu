@@ -4,7 +4,7 @@ export interface Product {
   price: number
   originalPrice?: number
   category: string
-  image: string
+  image?: string
   images?: string[]
   rating: number
   reviews: number
@@ -20,6 +20,35 @@ export interface Product {
   sku?: string
 }
 
+export const fetchProducts = async (): Promise<Product[]> => {
+  try {
+    const res = await fetch('/api/products');
+    if (res.ok) {
+      const data = await res.json();
+      return data.map((p: any) => ({ ...p, id: p._id }));
+    }
+    return [];
+  } catch (error) {
+    console.error('Failed to fetch products:', error);
+    return [];
+  }
+};
+
+export const fetchProductById = async (id: string): Promise<Product | null> => {
+  try {
+    const res = await fetch(`/api/products/${id}`);
+    if (res.ok) {
+      const data = await res.json();
+      return { ...data, id: data._id };
+    }
+    return null;
+  } catch (error) {
+    console.error('Failed to fetch product:', error);
+    return null;
+  }
+};
+
+// Keep static data for fallback or initial load
 export const products: Product[] = [
   {
     id:6,

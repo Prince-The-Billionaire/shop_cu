@@ -2,7 +2,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import { gsap } from "gsap";
 import { FaInstagram, FaPlus } from "react-icons/fa";
-import { Product, products as productsData } from "@/lib/products-data";
+import { Product } from "@/lib/products-data";
 import Header from "@/components/Header";
 
 const accent = "#FFA726"; // Light orange
@@ -35,8 +35,33 @@ const page = () => {
   const [mainImagePreview, setMainImagePreview] = useState<string | null>(null);
   const [additionalImages, setAdditionalImages] = useState<File[]>([]);
   const [additionalImagesPreview, setAdditionalImagesPreview] = useState<string[]>([]);
+  const [brandImage, setBrandImage] = useState<File | null>(null);
+  const [brandImagePreview, setBrandImagePreview] = useState<string | null>(null);
   const [selectedProduct, setSelectedProduct] = useState(emptyProduct as Product);
   const [isAddMode, setIsAddMode] = useState(false);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+
+  // Fetch products on mount
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch('/api/products');
+        if (res.ok) {
+          const data = await res.json();
+          // Map _id to id for compatibility
+          const mappedProducts = data.map((p: any) => ({ ...p, id: p._id }));
+          setProducts(mappedProducts);
+        }
+      } catch (error) {
+        console.error('Failed to fetch products:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
 
   // Preview for main image
   useEffect(() => {
@@ -66,6 +91,19 @@ const page = () => {
     }
   }, [additionalImages, selectedProduct.images]);
 
+  // Preview for brand image
+  useEffect(() => {
+    if (brandImage) {
+      const url = URL.createObjectURL(brandImage);
+      setBrandImagePreview(url);
+      return () => URL.revokeObjectURL(url);
+    } else if (selectedProduct.brandImage) {
+      setBrandImagePreview(selectedProduct.brandImage);
+    } else {
+      setBrandImagePreview(null);
+    }
+  }, [brandImage, selectedProduct.brandImage]);
+
   // Drag and drop handlers for main image
   const handleMainImageDrop = (e: React.DragEvent<HTMLLabelElement>) => {
     e.preventDefault();
@@ -82,12 +120,21 @@ const page = () => {
     }
   };
 
+  // Drag and drop handlers for brand image
+  const handleBrandImageDrop = (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      setBrandImage(e.dataTransfer.files[0]);
+    }
+  };
+
   // Handle product selection
   const handleProductClick = (product: Product) => {
     setSelectedProduct(product);
     setIsAddMode(false);
     setMainImage(null);
     setAdditionalImages([]);
+    setBrandImage(null);
   };
 
   // Handle add product mode
@@ -96,6 +143,7 @@ const page = () => {
     setIsAddMode(true);
     setMainImage(null);
     setAdditionalImages([]);
+    setBrandImage(null);
   };
 
   // Controlled form fields
@@ -112,6 +160,115 @@ const page = () => {
     }));
   };
 
+  // Handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+
+    try {
+      let mainImageUrl = selectedProduct.image;
+      let additionalImageUrls = selectedProduct.images || [];
+      let brandImageUrl = selectedProduct.brandImage;
+
+      // Upload main image if new
+      if (mainImage) {
+        const formData = new FormData();
+        formData.append('file', mainImage);
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+        if (res.ok) {
+          const data = await res.json();
+          mainImageUrl = data.url;
+        } else {
+          throw new Error('Failed to upload main image');
+        }
+      }
+
+      // Upload additional images if new
+      if (additionalImages.length > 0) {
+        const uploadPromises = additionalImages.map(async (file) => {
+          const formData = new FormData();
+          formData.append('file', file);
+          const res = await fetch('/api/upload', {
+            method: 'POST',
+            body: formData,
+          });
+          if (res.ok) {
+            const data = await res.json();
+            return data.url;
+          } else {
+            throw new Error('Failed to upload additional image');
+          }
+        });
+        additionalImageUrls = await Promise.all(uploadPromises);
+      }
+
+      // Upload brand image if new
+      if (brandImage) {
+        const formData = new FormData();
+        formData.append('file', brandImage);
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+        if (res.ok) {
+          const data = await res.json();
+          brandImageUrl = data.url;
+        } else {
+          throw new Error('Failed to upload brand image');
+        }
+      }
+
+      // Prepare product data
+      const productData = {
+        ...selectedProduct,
+        image: mainImageUrl,
+        images: additionalImageUrls,
+        brandImage: brandImageUrl,
+      };
+
+      let res;
+      if (isAddMode) {
+        res = await fetch('/api/products', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(productData),
+        });
+      } else {
+        res = await fetch(`/api/products/${selectedProduct.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(productData),
+        });
+      }
+
+      if (res.ok) {
+        // Refresh products
+        const productsRes = await fetch('/api/products');
+        if (productsRes.ok) {
+          const data = await productsRes.json();
+          const mappedProducts = data.map((p: any) => ({ ...p, id: p._id }));
+          setProducts(mappedProducts);
+        }
+        // Reset form
+        setSelectedProduct(emptyProduct);
+        setIsAddMode(false);
+        setMainImage(null);
+        setAdditionalImages([]);
+        setBrandImage(null);
+      } else {
+        throw new Error('Failed to save product');
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      alert('Failed to save product. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex bg-white">
       <Header />
@@ -120,7 +277,7 @@ const page = () => {
         <aside className="w-full md:max-w-xs bg-gray-50 rounded-xl shadow-lg p-4 md:p-6 space-y-4 overflow-auto mb-6 md:mb-0 h-auto md:h-[80vh] order-1 md:order-none">
           <h3 className="text-lg font-bold mb-2 text-black">Products</h3>
           <div className="flex flex-col gap-2">
-            {productsData.slice(0, 5).map((product) => (
+            {products.slice(0, 5).map((product) => (
               <button
                 key={product.id}
                 type="button"
@@ -154,6 +311,7 @@ const page = () => {
         {/* Form */}
         <form
           ref={formRef}
+          onSubmit={handleSubmit}
           className="flex-1 w-full md:w-3xl max-w-3xl mx-auto bg-white rounded-xl rounded-l-3xl shadow-lg p-4 md:p-8 space-y-6"
           style={{ borderTop: `6px solid ${accent}` }}
         >
@@ -249,6 +407,46 @@ const page = () => {
               />
             </label>
           </div>
+          {/* Brand Image Preview */}
+          <div>
+            <label className="block text-sm font-medium text-black mb-2">
+              Brand Image Preview
+            </label>
+            {brandImagePreview ? (
+              <img
+                src={brandImagePreview}
+                alt="Brand Preview"
+                className="w-32 h-32 object-cover rounded mb-2 border"
+              />
+            ) : (
+              <div className="w-32 h-32 flex items-center justify-center bg-gray-100 rounded mb-2 border text-gray-400">
+                No Image
+              </div>
+            )}
+          </div>
+          {/* Brand Image Upload */}
+          <div className="mb-4">
+            <label
+              htmlFor="brand-image"
+              className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg h-32 cursor-pointer hover:border-orange-400 transition relative"
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={handleBrandImageDrop}
+            >
+              <FaPlus className="text-2xl text-gray-400 mb-2" />
+              <span className="text-black text-sm">Drag & drop or click to add brand image</span>
+              <input
+                id="brand-image"
+                type="file"
+                accept="image/*"
+                className="absolute inset-0 opacity-0 cursor-pointer"
+                onChange={(e) => {
+                  if (e.target.files && e.target.files[0]) {
+                    setBrandImage(e.target.files[0]);
+                  }
+                }}
+              />
+            </label>
+          </div>
           {/* Name */}
           <div>
             <label className="block text-sm font-medium text-black mb-1">Name</label>
@@ -318,6 +516,17 @@ const page = () => {
               rows={3}
             />
           </div>
+          {/* Long Description */}
+          <div>
+            <label className="block text-sm font-medium text-black mb-1">Long Description</label>
+            <textarea
+              name="longDescription"
+              value={selectedProduct.longDescription}
+              onChange={handleChange}
+              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-200 text-black"
+              rows={5}
+            />
+          </div>
           {/* Instagram */}
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1">
@@ -366,12 +575,103 @@ const page = () => {
               className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-200 text-black"
             />
           </div>
+          {/* Specifications */}
+          <div>
+            <label className="block text-sm font-medium text-black mb-2">Specifications</label>
+            {Object.entries(selectedProduct.specifications || {}).map(([key, value], index) => (
+              <div key={index} className="flex gap-2 mb-2">
+                <input
+                  type="text"
+                  placeholder="Key"
+                  value={key}
+                  onChange={(e) => {
+                    const newSpecs = { ...selectedProduct.specifications };
+                    delete newSpecs[key];
+                    newSpecs[e.target.value] = value;
+                    setSelectedProduct((prev) => ({ ...prev, specifications: newSpecs }));
+                  }}
+                  className="flex-1 border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-200 text-black"
+                />
+                <input
+                  type="text"
+                  placeholder="Value"
+                  value={value}
+                  onChange={(e) => {
+                    const newSpecs = { ...selectedProduct.specifications };
+                    newSpecs[key] = e.target.value;
+                    setSelectedProduct((prev) => ({ ...prev, specifications: newSpecs }));
+                  }}
+                  className="flex-1 border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-200 text-black"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    const newSpecs = { ...selectedProduct.specifications };
+                    delete newSpecs[key];
+                    setSelectedProduct((prev) => ({ ...prev, specifications: newSpecs }));
+                  }}
+                  className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => {
+                const newSpecs = { ...selectedProduct.specifications, "": "" };
+                setSelectedProduct((prev) => ({ ...prev, specifications: newSpecs }));
+              }}
+              className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+            >
+              Add Specification
+            </button>
+          </div>
+          {/* Features */}
+          <div>
+            <label className="block text-sm font-medium text-black mb-2">Features</label>
+            {selectedProduct.features?.map((feature, index) => (
+              <div key={index} className="flex gap-2 mb-2">
+                <input
+                  type="text"
+                  value={feature}
+                  onChange={(e) => {
+                    const newFeatures = [...(selectedProduct.features || [])];
+                    newFeatures[index] = e.target.value;
+                    setSelectedProduct((prev) => ({ ...prev, features: newFeatures }));
+                  }}
+                  className="flex-1 border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-200 text-black"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    const newFeatures = (selectedProduct.features || []).filter((_, i) => i !== index);
+                    setSelectedProduct((prev) => ({ ...prev, features: newFeatures }));
+                  }}
+                  className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => {
+                const newFeatures = [...(selectedProduct.features || []), ""];
+                setSelectedProduct((prev) => ({ ...prev, features: newFeatures }));
+              }}
+              className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+            >
+              Add Feature
+            </button>
+          </div>
           {/* Submit */}
           <button
             type="submit"
-            className="w-full py-2 rounded bg-orange-400 hover:bg-orange-500 text-white font-semibold transition-all duration-200"
+            disabled={submitting}
+            className="w-full py-2 rounded bg-orange-400 hover:bg-orange-500 disabled:bg-orange-300 text-white font-semibold transition-all duration-200"
           >
-            {isAddMode ? "Add Product" : "Update Product"}
+            {submitting ? "Saving..." : (isAddMode ? "Add Product" : "Update Product")}
           </button>
         </form>
       </main>
